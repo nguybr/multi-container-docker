@@ -1,0 +1,43 @@
+language: generic
+sudo: required
+# tell that docker is a dependency
+services:
+  - docker
+
+# build out a test version using dev dockerfile; prod dockerfile only contains build files and no dependencies
+before_install:
+  - docker build -t bryant/react-test -f ./client/Dockerfile.dev .
+  # if you had other tests, you could build them here
+  # ex. docker build myOtherProjects
+
+# test running section; if any test fails, travis CI build will fail
+script:
+  - docker run -e CI=true bryant/react-test npm run test
+  # if you had other tests, you could run them here
+  # ex. docker run myOtherProjeccts
+
+# build prod version of project
+after_success:
+  - docker build -t bryant/multi-client ./client
+  - docker build -t bryant/multi-nginx ./nginx
+  - docker build -t bryant/multi-server ./server
+  - docker build -t bryant/multi-worker ./worker
+  # 1. Log in to docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # 2. Take these images, push to docker hub
+  - docker push bryant/multi-client
+  - docker push bryant/multi-nginx
+  - docker push bryant/multi-server
+  - docker push bryant/multi-worker
+
+deploy:
+  provider: elasticbeanstalk
+  region: "us-east-2"
+  app: "docker"
+  env: "Docker-env"
+  bucket_name: "elasticbeanstalk-us-east-2-496451420102"
+  bucket_path: "docker"
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
