@@ -12,7 +12,7 @@ before_install:
 
 # test running section; if any test fails, travis CI build will fail
 script:
-  - docker run -e CI=true bryant/react-test npm run test
+  - docker run -e CI=true bryant/react-test npm test
   # if you had other tests, you could run them here
   # ex. docker run myOtherProjeccts
 
@@ -30,14 +30,14 @@ after_success:
   - docker push bryant/multi-server
   - docker push bryant/multi-worker
 
-deploy:
-  provider: elasticbeanstalk
-  region: "us-east-2"
-  app: "docker"
-  env: "Docker-env"
-  bucket_name: "elasticbeanstalk-us-east-2-496451420102"
-  bucket_path: "docker"
-  on:
-    branch: master
-  access_key_id: $AWS_ACCESS_KEY
-  secret_access_key: $AWS_SECRET_KEY
+# deploy:
+#   provider: elasticbeanstalk
+#   region: "us-east-2"
+#   app: "docker"
+#   env: "Docker-env"
+#   bucket_name: "elasticbeanstalk-us-east-2-496451420102"
+#   bucket_path: "docker"
+#   on:
+#     branch: master
+#   access_key_id: $AWS_ACCESS_KEY
+#   secret_access_key: $AWS_SECRET_KEY
