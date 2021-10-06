@@ -6,7 +6,7 @@ services:
 
 # build out a test version using dev dockerfile; prod dockerfile only contains build files and no dependencies
 before_install:
-  - docker build -t bryant/react-test -f ./client/Dockerfile.dev .
+  - docker build -t bryant/react-test -f ./client/Dockerfile.dev ./client
   # if you had other tests, you could build them here
   # ex. docker build myOtherProjects
 
